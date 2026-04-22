@@ -52,6 +52,10 @@ window.onload = async function() {
     ];
     pushAll(TEST_TUPLES, "646", REGULAR_COLOR, 0);
   }
+
+  // Wire up copy-all buttons
+  document.getElementById("copy_domains_btn").addEventListener("click", copyAllDomains);
+  document.getElementById("copy_ips_btn").addEventListener("click", copyAllIPs);
 };
 
 // Monitor for dark mode updates.
@@ -336,11 +340,6 @@ function makeRow(isFirst, tuple) {
   addrTd.oncontextmenu = handleContextMenu;
 
   // Build the (possibly invisible) "WebSocket/Cached" column.
-  // We don't need to worry about drawing both, because a cached WebSocket
-  // would be nonsensical.
-  //
-  // Now that we also have a Service Worker icon, I just made it replace
-  // the Cached icon because I'm too lazy to align multiple columns properly.
   const cacheTd = document.createElement("td");
   cacheTd.className = `cacheTd${connectedClass}`;
   if (flags & DFLAG_WEBSOCKET) {
@@ -364,10 +363,70 @@ function makeRow(isFirst, tuple) {
   }
 
   tr._domain = domain;
+  tr._addr = addr;
   tr.appendChild(domainTd);
   tr.appendChild(addrTd);
   tr.appendChild(cacheTd);
   return tr;
+}
+
+// Collect all domains from the table.
+function getAllDomains() {
+  const domains = [];
+  for (let tr = table.firstChild; tr; tr = tr.nextSibling) {
+    if (tr._domain) {
+      domains.push(tr._domain);
+    }
+  }
+  return domains;
+}
+
+// Collect all IP addresses from the table.
+function getAllIPs() {
+  const ips = [];
+  for (let tr = table.firstChild; tr; tr = tr.nextSibling) {
+    if (tr._addr) {
+      ips.push(tr._addr);
+    }
+  }
+  return ips;
+}
+
+// Copy all domains to clipboard, one per line.
+function copyAllDomains() {
+  const text = getAllDomains().join("\n");
+  copyToClipboard(text, document.getElementById("copy_domains_btn"));
+}
+
+// Copy all IPs to clipboard, one per line.
+function copyAllIPs() {
+  const text = getAllIPs().join("\n");
+  copyToClipboard(text, document.getElementById("copy_ips_btn"));
+}
+
+// Copy text to clipboard and briefly show feedback on the button.
+function copyToClipboard(text, btn) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = "✓";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove("copied");
+    }, 1200);
+  }).catch(() => {
+    // Fallback for older browsers / restricted contexts
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  });
 }
 
 // Given a long domain name, generate "prefix...suffix".  When the user
