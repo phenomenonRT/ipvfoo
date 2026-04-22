@@ -291,14 +291,15 @@ img {
 <body>
 <div class="border">
   <button id="beg">Click to grant permission</button>
+    <div id="copy_toolbar">
+    <button id="copy_domains_btn" class="copy-btn" title="Копировать все домены (по одному на строку)">📋 Домены</button>
+    <button id="copy_ips_btn" class="copy-btn" title="Копировать все IP-адреса (по одному на строку)">📋 IP-адреса</button>
+  </div>
   <table id="addr_table" height="1px"></table>
   <div id="spill_count_container">
   &#x22ee; <span id="spill_count">0</span> requests omitted
   </div>
-  <div id="copy_toolbar">
-    <button id="copy_domains_btn" class="copy-btn" title="Копировать все домены (по одному на строку)">📋 Домены</button>
-    <button id="copy_ips_btn" class="copy-btn" title="Копировать все IP-адреса (по одному на строку)">📋 IP-адреса</button>
-  </div>
+
   <div id="mobile_footer">
     <div id="options_link"><a href="options.html">Options</a></div>
     <img id="pattern_icon_lightfg">
