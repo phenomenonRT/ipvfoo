@@ -43,6 +43,22 @@ if (chrome.runtime.getManifest().background.service_worker) {
   importScripts("iputil.js", "common.js");
 }
 
+
+// ---------------------------------------------------------------------------
+// Collector: send domain+IP to local server
+// ---------------------------------------------------------------------------
+function collectorSend(record) {
+  // Read settings directly from options (already loaded via common.js).
+  if (!options[COLLECTOR_ENABLED]) return;
+  const serverUrl = (options[COLLECTOR_URL] || "").trim();
+  if (!serverUrl) return;
+  const endpoint = serverUrl.replace(/\/$/, "") + "/api/collect";
+  fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify([record]),
+  }).catch(() => { /* ignore network errors silently */ });
+}
 // Possible states for an instance of TabInfo.
 // We begin at BIRTH, and only ever move forward, not backward.
 const TAB_BIRTH = 0;    // Waiting for makeAlive() or remove()
@@ -372,6 +388,17 @@ class TabInfo extends SaveableEntry {
     this.updateIcon();
     this.pushOne(domain);
     this.save();
+
+    // Send to collector server if enabled.
+    if (addr && !(aflags & AFLAG_CACHE)) {
+      collectorSend({
+        domain: domain,
+        ip: addr,
+        version: addr.indexOf(":") >= 0 ? "6" : addr.indexOf(".") >= 0 ? "4" : "?",
+        ssl: !!(dflags & DFLAG_SSL),
+        tab_url: this.mainOrigin || null,
+      });
+    }
   }
 
   updateIcon() {

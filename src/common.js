@@ -75,6 +75,10 @@ const CUSTOM_PROVIDER = "customProvider:";
 const CUSTOM_PROVIDER_DOMAIN = CUSTOM_PROVIDER + "domain";
 const CUSTOM_PROVIDER_IP = CUSTOM_PROVIDER + "ip";
 
+// Collector server settings
+const COLLECTOR_ENABLED = "collectorEnabled";
+const COLLECTOR_URL     = "collectorUrl";
+
 // "$" is a placeholder for the user's selected domain or IP address.
 const LOOKUP_PROVIDERS = {
   "bgp.he.net": {
@@ -163,6 +167,8 @@ let _watchOptionsFunc = null;
 const DEFAULT_LOCAL_OPTIONS = {
   [REGULAR_COLOR]: "",  // default replaced on first boot.
   [INCOGNITO_COLOR]: "lightfg",
+  [COLLECTOR_ENABLED]: false,
+  [COLLECTOR_URL]: "http://127.0.0.1:3456",
 };
 const DEFAULT_SYNC_OPTIONS = {
   [LOOKUP_PROVIDER]: "bgp.he.net",

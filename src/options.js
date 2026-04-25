@@ -144,6 +144,59 @@ window.onload = async () => {
     }
   };
 
+  // ---- Collector settings ----
+  await optionsReady;
+
+  const collectorEnabled = document.getElementById("collector-enabled");
+  const collectorUrlInput = document.getElementById("collector-url-input");
+  const collectorStatus = document.getElementById("collector-status");
+  const testBtn = document.getElementById("test-collector-btn");
+  const openUiBtn = document.getElementById("open-ui-btn");
+
+  // Load saved values
+  collectorEnabled.checked = !!options[COLLECTOR_ENABLED];
+  if (options[COLLECTOR_URL]) {
+    collectorUrlInput.value = options[COLLECTOR_URL];
+    openUiBtn.href = options[COLLECTOR_URL];
+  }
+
+  function saveCollectorSettings() {
+    const url = collectorUrlInput.value.trim();
+    const enabled = collectorEnabled.checked;
+    collectorUrlInput.classList.remove("invalid");
+    try {
+      if (url) new URL(url);
+    } catch {
+      collectorUrlInput.classList.add("invalid");
+      return;
+    }
+    openUiBtn.href = url || "http://127.0.0.1:3456";
+    chrome.storage.local.set({
+      [COLLECTOR_ENABLED]: enabled,
+      [COLLECTOR_URL]: url,
+    });
+  }
+
+  collectorEnabled.addEventListener("change", saveCollectorSettings);
+  collectorUrlInput.addEventListener("input", saveCollectorSettings);
+
+  testBtn.addEventListener("click", async () => {
+    const url = (collectorUrlInput.value || "").trim().replace(/\/$/, "");
+    if (!url) return;
+    collectorStatus.className = "";
+    collectorStatus.textContent = "Проверка…";
+    try {
+      const r = await fetch(url + "/api/stats", { signal: AbortSignal.timeout(4000) });
+      const d = await r.json();
+      collectorStatus.className = "";
+      collectorStatus.textContent =
+        `✓ Сервер доступен — ${d.total_entries ?? "?"} записей, ${d.total_visits ?? "?"} визитов`;
+    } catch (e) {
+      collectorStatus.className = "error";
+      collectorStatus.textContent = `✗ Нет связи: ${e.message}`;
+    }
+  });
+
   // Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1946972
   if (typeof browser != "undefined") {
     document.body.addEventListener("click", function(e) {

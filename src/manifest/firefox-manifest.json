@@ -9,7 +9,11 @@
     "128": "icon128.png"
   },
   "background": {
-    "scripts": ["iputil.js", "common.js", "background.js"]
+    "scripts": [
+      "iputil.js",
+      "common.js",
+      "background.js"
+    ]
   },
   "browser_specific_settings": {
     "gecko": {
@@ -36,6 +40,7 @@
     "webRequest"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "http://127.0.0.1/*"
   ]
 }

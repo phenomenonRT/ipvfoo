@@ -80,6 +80,60 @@ limitations under the License.
     background-color: #fcc;
   }
 
+  /* Collector section */
+  #collector-section {
+    margin-top: 24px;
+  }
+  .collector-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  #collector-url-input {
+    flex: 1;
+    min-width: 220px;
+    padding: 4pt 6pt;
+    box-sizing: border-box;
+    border: 1px solid #888;
+    color: inherit;
+    background-color: inherit;
+    font-family: monospace;
+    font-size: 10pt;
+  }
+  #collector-url-input.invalid {
+    background-color: #fcc;
+  }
+  #collector-status {
+    font-size: 9pt;
+    color: #4a9a4a;
+    margin-left: 4px;
+  }
+  #collector-status.error {
+    color: #c04040;
+  }
+  #open-ui-btn {
+    font-size: 9pt;
+    padding: 3pt 8pt;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 3px;
+    background: #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    display: inline-block;
+  }
+  #open-ui-btn:hover {
+    background: #dde8f5;
+    border-color: #6a9fd8;
+  }
+  label.toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
   /* dark mode */
   @media (prefers-color-scheme: dark) {
     body {
@@ -91,6 +145,19 @@ limitations under the License.
     }
     #nat64 table, #nat64 td, #nat64 tr {
       color: #ff8080;
+    }
+    #collector-url-input.invalid {
+      background-color: #700;
+    }
+    #open-ui-btn {
+      background: #333;
+      border-color: #555;
+      color: #ccc;
+    }
+    #open-ui-btn:hover {
+      background: #2a3f5a;
+      border-color: #5080b0;
+      color: #add0ff;
     }
     .url-field.invalid {
       background-color: #700;
@@ -131,6 +198,26 @@ limitations under the License.
   <table id="nat64">
     <tr><td>null::/96</td></tr>
   </table>
+
+  <div id="collector-section">
+    <h1>Сервер сбора данных</h1>
+    <p style="margin-bottom:8pt">Каждый новый домен/IP будет автоматически отправляться на локальный сервер.</p>
+    <div class="collector-row">
+      <label class="toggle">
+        <input type="checkbox" id="collector-enabled">
+        Включить отправку на сервер
+      </label>
+    </div>
+    <div class="collector-row">
+      <span style="white-space:nowrap">Адрес сервера:</span>
+      <input type="text" id="collector-url-input" value="http://127.0.0.1:3456" placeholder="http://127.0.0.1:3456">
+      <button id="test-collector-btn" style="font-size:9pt; padding:3pt 8pt">Проверить</button>
+      <a id="open-ui-btn" href="http://127.0.0.1:3456" target="_blank">Открыть веб-интерфейс ↗</a>
+    </div>
+    <div class="collector-row">
+      <span id="collector-status"></span>
+    </div>
+  </div>
 
   <div style="display:inline-block; padding-top:1.5em; width:100%">
     <button id="revert_btn" style="float:left">Revert to Defaults</button>

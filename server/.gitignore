@@ -1,0 +1,5 @@
+node_modules/
+ipvfoo.db
+*.db-journal
+*.db-wal
+*.db-shm
